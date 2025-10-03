@@ -14,9 +14,8 @@ class Account :
         with open(file,mode='w',newline='',encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerow(['Action, Category , Value'])
-            writer.writerow(['Teste'])
 
 if __name__ == "__main__":
-    user = input("Nome do ficheiro (sem extensão): ")
+    user = input("Account name: ")
     ac1 = Account(user)
       
