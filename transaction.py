@@ -18,7 +18,7 @@ class Transaction:
     
     def transactionMenu(self):
         while True:
-            print(f'\n Welcome {self.account_name} to Track My Finances')
+            print(f'\n Welcome {self.account_name} to Track My Finances !')
             print('1. Add an transaction')
             print('2. List all transactions')
             print('3. Show total transactions')
