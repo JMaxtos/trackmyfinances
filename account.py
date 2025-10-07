@@ -17,10 +17,10 @@ class Account :
     
     # Updates the account balance by adding the given amount
     def updateBalance(self,amount):
-        try: #Validate that the input can be converted to an integer 
+        try: #Validate that the input can be converted to float 
             amount = float(amount)  
         except ValueError:
-            raise TypeError("Only integers are allowed as amount") 
+            raise TypeError("Only floats are allowed as amount") 
         self.balance += amount
 
     # Create the CSV file 
