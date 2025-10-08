@@ -67,7 +67,7 @@ class Menu:
             print("\nAccounts menu\n")
             print("1. Create an account")
             print("2. Find an account")
-            print("3. Change Account")
+            print("3. Change account")
             print("4. Show Balance")
             print("5. Exit ")
             print('\n*********************\n')
