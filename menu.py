@@ -5,8 +5,12 @@ from utils import Utils
 
 # Main menu system for the Track My Finances terminal application
 class Menu:
- 
-    
+    MENU_TITLES = {"main": "Track My Finances","accounts":"Accounts Menu","transactions":"Transactions Menu","transactions filters":"Filters Menu","new transactions":"New Transaction Menu"}
+    MAIN_MENU_OPTIONS = ["Accounts Menu","Transactions Menu","Exit Program"]
+    TRANSACTIONS_MENU = ["Add an transaction","List all transactions","Show total transactions","Filter transactions", "Exit Menu"]
+    ACCOUNTS_MENU = ["Create an account","Find an account","Change account","Show Balance","Exit Menu"]
+           
+   
     # Initialize the menu and load or create user accounts
     def __init__(self):
         
@@ -28,50 +32,24 @@ class Menu:
         # Launch the main menu
         self.principalMenu()   
 
+    # ====== Main Menu ======  
+    # Function that displays the menus
+    def displayMenu(self, title, options):
+        Utils.clearTerminal()
 
-    # Create the first account when none exists
-    def firstAccount(self):
-                account_name = input("Please insert the name of the new account: ")    
-                balance = input ("Please insert initial balance: ")
-
-                # Create and store the first account
-                account = Account(account_name,balance)
-                self.account = account
-                self.account_name = account_name
-
-
-    # Allow user to log in to an existing account
-    def loginAccount(self,accounts):
-        while True:
-            # Display the current available accounts
-            print("Existing accounts:")
-
-            for acc in accounts:
-                print(f"- {acc}")
-            account_name = input("Please insert the name of your account: ")
-
-            # Validate that the provided account exists and load it if found
-            if Account.findAccount(account_name):
-                self.account_name = account_name
-                self.account = Account(account_name)
-                break
-            else:
-                print(f"Account named \"{account_name}\" doesn't exist\n") 
-
+        if self.account_name:
+            print(f"Account: {self.account_name}\n")
+        print(f"{title}\n")
+        for i, opt in enumerate(options, 1):
+            print(f"{i}. {opt}")
+        return Utils.getIntInput("Choose an option: ", 1, len(options))
+    
     # Display the main application menu
     def principalMenu(self,):
-            
-            # Clear the terminal for better readibility
-            Utils.clearTerminal()
-            
-            print(f'Welcome {self.account_name} to Track My Finances !\n')
-            print("1. Accounts Menu")
-            print("2. Transactions Menu")
-            print("3. Exit Program")
-
-            # Get user input for menu
-            choice = Utils.getIntInput('Enter your choice: ', 1, 3)
-
+           while True:
+            # Display main Menu
+            choice = self.displayMenu(self.MENU_TITLES["main"], self.MAIN_MENU_OPTIONS)
+          
             # Validate the user input choice
             self.principalMenuChoice(choice)
 
@@ -98,20 +76,8 @@ class Menu:
 
     # Display the account menu     
     def accountsMenu(self):
-            
-            # Clear terminal before showing options
-            Utils.clearTerminal()
-            
-            print("Accounts menu\n")
-            print("1. Create an account")
-            print("2. Find an account")
-            print("3. Change account")
-            print("4. Show Balance")
-            print("5. Exit ")
-
-            
-            choice = Utils.getIntInput('Enter your choice: ', 1, 5)
-            self.accountsMenuChoice(choice)
+        choice = self.displayMenu(self.MENU_TITLES["accounts"], self.ACCOUNTS_MENU)
+        self.accountsMenuChoice(choice)
 
 
     # Handle user input from the accounts menu
@@ -170,23 +136,12 @@ class Menu:
     
     # Display the transactions Menu
     def transactionsMenu(self):
-            # Clears the Terminal
-            Utils.clearTerminal()
-            
-            # Initialize a transaction manager for the current account
-            tx = Transaction(self.account)
-            self.transaction = tx
-          
-            print("Transaction Menu \n")
-            print('1. Add an transaction')
-            print('2. List all transactions')
-            print('3. Show total transactions')
-            print('4. Filter transactions ')
-            print('5. Exit')       
-          
 
-            choice = Utils.getIntInput('Enter your choice: ', 1, 5)
-            self.transactionsMenuChoice(choice)
+        # Initialize a transaction manager for the current account
+        self.transaction = Transaction(self.account)
+         
+        choice = self.displayMenu(self.MENU_TITLES["transactions"], self.TRANSACTIONS_MENU)
+        self.transactionsMenuChoice(choice)
 
     # Handle user input from the transaction menu
     def transactionsMenuChoice(self,choice):
@@ -211,6 +166,38 @@ class Menu:
         # 6. Exit
         if choice == 6:
              self.principalMenu()
+
+    # ====== Support Functions ====== 
+     
+    # Create the first account when none exists
+    def firstAccount(self):
+                account_name = input("Please insert the name of the new account: ")    
+                balance = input ("Please insert initial balance: ")
+
+                # Create and store the first account
+                account = Account(account_name,balance)
+                self.account = account
+                self.account_name = account_name
+    
+
+    # Allow user to log in to an existing account
+    def loginAccount(self,accounts):
+        while True:
+            # Display the current available accounts
+            print("Existing accounts:")
+
+            for acc in accounts:
+                print(f"- {acc}")
+            account_name = input("Please insert the name of your account: ")
+
+            # Validate that the provided account exists and load it if found
+            if Account.findAccount(account_name):
+                self.account_name = account_name
+                self.account = Account(account_name)
+                break
+            else:
+                print(f"Account named \"{account_name}\" doesn't exist\n") 
+
 
 if __name__ == "__main__":
     Menu()

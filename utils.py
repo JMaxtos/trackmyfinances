@@ -7,7 +7,6 @@ class Utils:
 
 
     #  Safely gets an integer input from the user. Repeats until a valid integer within the allowed range is entered.
-        
     @staticmethod
     def getIntInput(prompt, min_value=None, max_value=None):
        
