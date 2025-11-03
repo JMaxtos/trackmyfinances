@@ -57,13 +57,14 @@ class Transaction:
 
         print(f"\nTransaction added successfully!\nType: {type.capitalize()} | Category: {category.capitalize()} | Ammount: {amount:.2f}\nNew balance: {new_balance:.2f}")
     
-
+    # Function that list all the  transactions on the account
     def listAllTransactions(self):
         with open(self.account.file,"r",newline="",encoding='utf-8') as f:
             # Reads lines by column names
             reader = csv.DictReader(f)
             return list(reader)
         
+    # Function that prints a list of transactions
     def printListTransactions(self,transactions):
         if not transactions:
             print(" No transactions found.")
@@ -71,4 +72,9 @@ class Transaction:
             print("\n List of all Transactions")
             for t in transactions:
                 print(f"{t['Date']} | {t['Type']} | {t['Category']} | {t['Value']} | {t['Balance']}")
+
+    # Function that lists transactions that match the condition
+    def transactionsByFilter(self,condition):
+        transactions= self.listAllTransactions()
+        return [filteredTransactions for filteredTransactions in transactions if condition(filteredTransactions)]
             
