@@ -15,18 +15,21 @@ class Transaction:
             amount = float(amount)
         except ValueError:
             raise NullValue("Invalid amount. Please provide a numeric value.")
+          
+        try:
+            # Read all CSV data
+            with open(self.account.file, 'r', newline='', encoding='utf-8') as f:
+                reader = csv.reader(f)
+                lines = list(reader)
 
-        # Read all CSV data
-        with open(self.account.file, 'r', newline='', encoding='utf-8') as f:
-            reader = csv.reader(f)
-            lines = list(reader)
-
-        # Skip header and find last balance
-        if len(lines) > 1:
-            # Get current total balance
-            last_balance = float(lines[-1][-1])  
-        else:
-            last_balance = 0
+            # Skip header and find last balance
+            if len(lines) > 1:
+                # Get current total balance
+                last_balance = float(lines[-1][-1])  
+            else:
+                last_balance = 0.0
+        except (FileNotFoundError,IndexError,ValueError):
+                last_balance = 0.0
 
         # Update balance based on transaction type
         if type == 'Expense':
@@ -44,15 +47,15 @@ class Transaction:
         ]
         lines.append(new_transaction)
 
-        # Write all lines back to CSV
-        with open(self.account.file, 'w', newline='', encoding='utf-8') as f:
+        # Append the new transaction to the file
+        with open(self.account.file, 'a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
-            writer.writerows(lines)
+            writer.writerow(new_transaction)
 
         # Update balance in memory
         self.account.balance = new_balance
 
-        print(f"\n Transaction added successfully! New balance: {new_balance:.2f}")
+        print(f"\n Transaction added successfully!\nType: {type.capitalize()} | Category: {category.capitalize()} | Ammount: {amount:.2f}\nNew balance: {new_balance:.2f}")
     
   
             
