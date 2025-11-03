@@ -24,6 +24,10 @@ class Account :
             self.balance = balance
             self.createCSVFile()
     
+    # List all accounts
+    @staticmethod
+    def listAllAccounts():
+        return [f[:-4] for f in os.listdir(Account.ACCOUNT_DIR) if f.endswith('.csv')]  
     
     # Return the current balance of the account
     def getBalance(self):

@@ -19,7 +19,7 @@ class Menu:
             os.makedirs(Account.ACCOUNT_DIR
                         )
         # Retrieve all existing accounts (csv files in the current directory)
-        accounts = [f[:-4] for f in os.listdir(Account.ACCOUNT_DIR) if f.endswith('.csv')]  
+        accounts = Account.listAllAccounts()
         
         if not accounts:
             print("No accounts found. You must create a new account first.\n")
