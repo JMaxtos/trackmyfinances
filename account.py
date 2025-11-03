@@ -8,9 +8,17 @@ class Account :
     # Initialize a new Account instance
     def __init__(self,account_name,balance = 0):
 
-        # Store account name and file
+        # Store account name 
         self.account_name = account_name
-        self.file =f"{self.account_name}.csv"
+        
+        # Check if the accounts directory is created
+        ACCOUNT_DIR = "Accounts"
+        if not os.path.exists(ACCOUNT_DIR):
+            os.makedirs(ACCOUNT_DIR)
+
+        # Create account CSV file on accounts directory
+        self.file = os.path.join(ACCOUNT_DIR, f"{self.account_name}.csv")
+
 
         # Check if account already exists
         if self.findAccount(self.account_name):
@@ -22,7 +30,7 @@ class Account :
             self.createCSVFile()
     
     
-    # Returns the current balance of the account
+    # Return the current balance of the account
     def getBalance(self):
         # Refresh balance to ensure the value is up-to-date
         self.loadBalance()
@@ -31,7 +39,7 @@ class Account :
     # Check if an account file with the given name exists
     @staticmethod
     def findAccount(name):
-        file = f"{name}.csv"
+        file = os.path.join("accounts", f"{name}.csv")
         return os.path.isfile(file)
     
     # Create the CSV file 
@@ -53,21 +61,25 @@ class Account :
     
     # Loads the latest balance by reading the last line of the CSV file
     def loadBalance(self):
-       with open(self.file, mode='r', newline='', encoding='utf-8') as f:
-        reader = csv.reader(f)
-        next(reader)  # skip header line
+        try:
+        # Open file in binary to move cursor to the end
+            with open(self.file, 'rb') as f:
 
-        # Read all lines and get the last one (latest transaction)
-        rows = list(reader)
+            # Set cursor 2 bytes before the end of file
+                f.seek(-2, os.SEEK_END)
+                
+                # Move cursor behind until it founds '\n'
+                while f.read(1) != b'\n':
+                    f.seek(-2, os.SEEK_CUR)
 
-        if len(rows) > 0:
-            last_row = rows[-1]
-            try:
-                # Current Balance
-                self.balance = float(last_row[-1])  
-            except (ValueError, IndexError):
-                # Corrupted file, default balance = 0
-                self.balance = 0
-        else:
-            # Empty file besides header
+                # Read line once found '\n' and convert to string
+                last_line = f.readline().decode()
+            
+            # Get last value
+            *_, balance = last_line.strip().split(',')
+
+            # Convert balance in float
+            self.balance = float(balance)
+
+        except Exception:
             self.balance = 0
