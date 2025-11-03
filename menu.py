@@ -5,11 +5,17 @@ from utils import Utils
 
 # Main menu system for the Track My Finances terminal application
 class Menu:
+ 
+    
     # Initialize the menu and load or create user accounts
     def __init__(self):
         
+        # Check if the accounts directory is created
+        if not os.path.exists(Account.ACCOUNT_DIR):
+            os.makedirs(Account.ACCOUNT_DIR
+                        )
         # Retrieve all existing accounts (csv files in the current directory)
-        accounts = [f[:-4] for f in os.listdir() if f.endswith('.csv')]  
+        accounts = [f[:-4] for f in os.listdir(Account.ACCOUNT_DIR) if f.endswith('.csv')]  
         
         if not accounts:
             print("No accounts found. You must create a new account first.\n")
@@ -175,12 +181,11 @@ class Menu:
             print('1. Add an transaction')
             print('2. List all transactions')
             print('3. Show total transactions')
-            print('4. Filter transactions by category')
-            print('5. Filter transactions by type ')
-            print('6. Exit')       
+            print('4. Filter transactions ')
+            print('5. Exit')       
           
 
-            choice = Utils.getIntInput('Enter your choice: ', 1, 6)
+            choice = Utils.getIntInput('Enter your choice: ', 1, 5)
             self.transactionsMenuChoice(choice)
 
     # Handle user input from the transaction menu
@@ -190,15 +195,19 @@ class Menu:
             self.transaction.addTransaction(100, type='Income', category='Salary')   
             input("\nPress Enter to return to transactions Menu...")
             self.transactionsMenu()
-        # 2. List all transactions (TBD)
+        # 2. List all transactions
         if choice ==2 :
             alltransactions= self.transaction.listAllTransactions()
             self.transaction.printListTransactions(alltransactions)
             input("\nPress Enter to return to transactions Menu...")
             self.transactionsMenu()
         # 3. Show total transactions (TBD)
-        # 4. Filter transactions by category (TBD)
-        # 5. Filter transactions by type (TBD)
+        # 4. Filter transactions by Category (TBD)
+        if choice == 4:
+            categoryTransactions = self.transaction.transactionsByFilter(lambda tx : tx['Category']=="Salary") 
+            self.transaction.printListTransactions(categoryTransactions)
+            input("\nPress Enter to return to transactions Menu...")
+            self.transactionsMenu()
         # 6. Exit
         if choice == 6:
              self.principalMenu()
