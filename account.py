@@ -4,20 +4,15 @@ from datetime import datetime
 
 # Financial account with a name, balance, and a CSV file that stores the account’s balance and transaction history.
 class Account :
-
+    ACCOUNT_DIR = "Accounts"
     # Initialize a new Account instance
     def __init__(self,account_name,balance = 0):
 
         # Store account name 
         self.account_name = account_name
         
-        # Check if the accounts directory is created
-        ACCOUNT_DIR = "Accounts"
-        if not os.path.exists(ACCOUNT_DIR):
-            os.makedirs(ACCOUNT_DIR)
-
         # Create account CSV file on accounts directory
-        self.file = os.path.join(ACCOUNT_DIR, f"{self.account_name}.csv")
+        self.file = os.path.join(self.ACCOUNT_DIR, f"{self.account_name}.csv")
 
 
         # Check if account already exists
