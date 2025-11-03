@@ -72,11 +72,15 @@ class Menu:
 
     # Handle user input from the main menu
     def principalMenuChoice(self,choice):
-        # Navigate to corresponding menu section
+        # Option 1: Go to accounts menu
         if choice == 1:
-            self.accountsMenu()        
+            self.accountsMenu()    
+
+        # Option 2: Go to transactions menu    
         if choice == 2:
             self.transactionsMenu()
+
+        # Option 3: Exits program
         if choice == 3:
             # Clear terminal before showing options
             Utils.clearTerminal()
@@ -187,6 +191,11 @@ class Menu:
             input("\nPress Enter to return to transactions Menu...")
             self.transactionsMenu()
         # 2. List all transactions (TBD)
+        if choice ==2 :
+            alltransactions= self.transaction.listAllTransactions()
+            self.transaction.printListTransactions(alltransactions)
+            input("\nPress Enter to return to transactions Menu...")
+            self.transactionsMenu()
         # 3. Show total transactions (TBD)
         # 4. Filter transactions by category (TBD)
         # 5. Filter transactions by type (TBD)

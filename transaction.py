@@ -55,7 +55,20 @@ class Transaction:
         # Update balance in memory
         self.account.balance = new_balance
 
-        print(f"\n Transaction added successfully!\nType: {type.capitalize()} | Category: {category.capitalize()} | Ammount: {amount:.2f}\nNew balance: {new_balance:.2f}")
+        print(f"\nTransaction added successfully!\nType: {type.capitalize()} | Category: {category.capitalize()} | Ammount: {amount:.2f}\nNew balance: {new_balance:.2f}")
     
-  
+
+    def listAllTransactions(self):
+        with open(self.account.file,"r",newline="",encoding='utf-8') as f:
+            # Reads lines by column names
+            reader = csv.DictReader(f)
+            return list(reader)
+        
+    def printListTransactions(self,transactions):
+        if not transactions:
+            print(" No transactions found.")
+        else:
+            print("\n List of all Transactions")
+            for t in transactions:
+                print(f"{t['Date']} | {t['Type']} | {t['Category']} | {t['Value']} | {t['Balance']}")
             
