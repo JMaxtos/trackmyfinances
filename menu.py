@@ -2,15 +2,16 @@ import os
 from account import Account
 from transaction import Transaction
 from utils import Utils
+from datetime import datetime
 
 # Main menu system for the Track My Finances terminal application
 class Menu:
-    MENU_TITLES = {"main": "Track My Finances","accounts":"Accounts Menu","transactions":"Transactions Menu","transactions filters":"Filters Menu","new transactions":"New Transaction Menu"}
+    MENU_TITLES = {"main": "Track My Finances","accounts":"Accounts Menu","transactions":"Transactions Menu","filters":"Filters Menu"}
     MAIN_MENU_OPTIONS = ["Accounts Menu","Transactions Menu","Exit Program"]
-    TRANSACTIONS_MENU = ["Add an transaction","List all transactions","Show total transactions","Filter transactions", "Exit Menu"]
+    TRANSACTIONS_MENU = ["Add an transaction","List all transactions","Transaction Filter Menu", "Exit Menu"]
     ACCOUNTS_MENU = ["Create an account","Find an account","Change account","Show Balance","Exit Menu"]
+    FILTERS_MENU = ["Filter by type","Filter by category","Filter by month","Filter by year","Filter by specific date","Exit Menu"]
            
-   
     # Initialize the menu and load or create user accounts
     def __init__(self):
         
@@ -24,10 +25,10 @@ class Menu:
         if not accounts:
             print("No accounts found. You must create a new account first.\n")
             # Prompt the user to create an initial account
-            self.firstAccount()
+            self.account_name, self.account = Account.firstAccount()
         else:
             # Allow user to select and log in to an existing account
-             self.loginAccount(accounts)
+            self.account_name, self.account = Account.loginAccount(accounts)
         
         # Launch the main menu
         self.principalMenu()   
@@ -56,15 +57,15 @@ class Menu:
 
     # Handle user input from the main menu
     def principalMenuChoice(self,choice):
-        # Option 1: Go to accounts menu
+        # accounts menu
         if choice == 1:
             self.accountsMenu()    
 
-        # Option 2: Go to transactions menu    
+        # transactions menu    
         if choice == 2:
             self.transactionsMenu()
 
-        # Option 3: Exits program
+        # Exits program
         if choice == 3:
             # Clear terminal before showing options
             Utils.clearTerminal()
@@ -136,7 +137,6 @@ class Menu:
     
     # Display the transactions Menu
     def transactionsMenu(self):
-
         # Initialize a transaction manager for the current account
         self.transaction = Transaction(self.account)
          
@@ -145,59 +145,123 @@ class Menu:
 
     # Handle user input from the transaction menu
     def transactionsMenuChoice(self,choice):
-        # 1. Add an transaction
+        # 1 Add a transaction
         if choice == 1:
-            self.transaction.addTransaction(100, type='Income', category='Salary')   
+            transactionAmount = int(input("Please insert the amount of the Transaction: "))
+            while True:
+                transactionType = int(input("\t1. Income\n\t2. Expense\nPlease insert the Type of the Transaction: "))
+                if transactionType in (1, 2):
+                    transactionType = Transaction.validateTransactionType(transactionType)
+                    break
+            
+            while True:
+                transactionCategory = input("Please insert the Category of the Transaction: ")
+                # Verify category name allowing spaces between words
+                if Utils.isValidString(transactionCategory):
+                    break
+            try:
+                self.transaction.addTransaction(transactionAmount, type=transactionType, category=transactionCategory)   
+            except:
+                raise Exception("Transaction couldn't be created. Please Try again")
             input("\nPress Enter to return to transactions Menu...")
             self.transactionsMenu()
-        # 2. List all transactions
+
+
+        #  List all transactions
         if choice ==2 :
             alltransactions= self.transaction.listAllTransactions()
             self.transaction.printListTransactions(alltransactions)
             input("\nPress Enter to return to transactions Menu...")
             self.transactionsMenu()
-        # 3. Show total transactions (TBD)
-        # 4. Filter transactions by Category (TBD)
+
+
+        # Transaction Filter Menu
+        if choice == 3 :
+         self.transactionFilterMenu()
+
+        # Exit
         if choice == 4:
-            categoryTransactions = self.transaction.transactionsByFilter(lambda tx : tx['Category']=="Salary") 
-            self.transaction.printListTransactions(categoryTransactions)
-            input("\nPress Enter to return to transactions Menu...")
-            self.transactionsMenu()
-        # 6. Exit
-        if choice == 6:
              self.principalMenu()
 
-    # ====== Support Functions ====== 
-     
-    # Create the first account when none exists
-    def firstAccount(self):
-                account_name = input("Please insert the name of the new account: ")    
-                balance = input ("Please insert initial balance: ")
+    # Display Transaction Filter Menu
+    def transactionFilterMenu(self):
+        choice = self.displayMenu(self.MENU_TITLES["filters"], self.FILTERS_MENU)
+        self.transactionFiltersMenuChoice(choice)
 
-                # Create and store the first account
-                account = Account(account_name,balance)
-                self.account = account
-                self.account_name = account_name
+    # Handle user input from the filter transaction menu
+    def transactionFiltersMenuChoice(self,choice):
+           
+        if choice == 1: # type
+            while True:
+                type = input("Please insert the Type you want to filter: ")
+                if Utils.isValidString(type):
+                    break
+            typeTransactions = self.transaction.transactionsByFilter(lambda tx : tx['Type']== type) 
+            self.transaction.printListTransactions(typeTransactions)
+            input("\nPress Enter to return to transactions Menu...")
+            self.transactionFilterMenu()
+
+
+        if choice == 2: # category
+            while True:
+                category = input("Please insert the Category you want to filter: ")
+                if Utils.isValidString(category):
+                    break
+            categoryTransactions = self.transaction.transactionsByFilter(lambda tx : tx['Category']== category) 
+            self.transaction.printListTransactions(categoryTransactions)
+            input("\nPress Enter to return to transactions Menu...")
+            self.transactionFilterMenu()
     
+        
+        if choice == 3: # month and year
+            while True:
+                try:
+                    year = Utils.validateYear(int(input("Please insert the year you want to filter: ")))
+                    month = Utils.validateMonth(int(input("Please insert the month you want to filter: ")))
+                    break
+                except ValueError as e:
+                    print(e) 
+            categoryTransactions = self.transaction.transactionsByFilter(lambda tx: (
+        (d := Utils.parseDate(tx['Date'])).year == year
+        and d.month == month
+             ))
+            self.transaction.printListTransactions(categoryTransactions)
+            input("\nPress Enter to return to transactions Menu...")
+            self.transactionFilterMenu()
+        
+        if choice == 4: # year
+            while True:
+                try:
+                    year = Utils.validateYear(int(input("Please insert the year you want to filter: ")))
+                    break
+                except ValueError as e:
+                    print(e)
 
-    # Allow user to log in to an existing account
-    def loginAccount(self,accounts):
-        while True:
-            # Display the current available accounts
-            print("Existing accounts:")
+            yearTransactions = self.transaction.transactionsByFilter(
+            lambda tx: Utils.parseDate(tx["Date"]).year == year
+            )
+            self.transaction.printListTransactions(yearTransactions)
+            input("\nPress Enter to return to transaction filter menu...")
+            self.transactionFilterMenu()
+        
+        if choice == 5:  # Filter by specific date
+            while True:
+                date_str = input("Please insert the date (YYYY-MM-DD): ")
+                try:
+                    target_date = Utils.parseOnlyDate(date_str)
+                    break
+                except ValueError:
+                    print("Invalid date format")
 
-            for acc in accounts:
-                print(f"- {acc}")
-            account_name = input("Please insert the name of your account: ")
+            dateTransactions = self.transaction.transactionsByFilter(
+            lambda tx: Utils.parseDate(tx['Date']).date() == target_date
+            )
+            
+            self.transaction.printListTransactions(dateTransactions)
+            input("\nPress Enter to return...")
+            self.transactionFilterMenu()
 
-            # Validate that the provided account exists and load it if found
-            if Account.findAccount(account_name):
-                self.account_name = account_name
-                self.account = Account(account_name)
-                break
-            else:
-                print(f"Account named \"{account_name}\" doesn't exist\n") 
-
-
+        
+        
 if __name__ == "__main__":
     Menu()
