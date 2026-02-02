@@ -216,7 +216,7 @@ class Menu:
         if choice == 3: # month and year
             while True:
                 try:
-                    year = Utils.validateYear(int(input("Please insert the year you want to filter: ")))
+                    year = Utils.validateYear(input("Please insert the year you want to filter: "))
                     month = Utils.validateMonth(int(input("Please insert the month you want to filter: ")))
                     break
                 except ValueError as e:
@@ -232,7 +232,7 @@ class Menu:
         if choice == 4: # year
             while True:
                 try:
-                    year = Utils.validateYear(int(input("Please insert the year you want to filter: ")))
+                    year = Utils.validateYear(input("Please insert the year you want to filter: "))
                     break
                 except ValueError as e:
                     print(e)

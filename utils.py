@@ -46,11 +46,13 @@ class Utils:
         
     # Validates year format
     @staticmethod
-    def validateYear(year:int):
-
-        if 1000 <= year <= 9999:
-            return year
-        raise ValueError("Invalid year. Must be 4 digits.")
+    def validateYear(year):
+        if year.isnumeric():
+            year = int(year)
+            if 1000 <= year <= 9999:
+                return year
+            raise ValueError("Invalid year. Must be 4 digits.")
+        raise ValueError("Year must be Numeric")
     
     @staticmethod
     def parseDate(date_str: str) -> datetime:
