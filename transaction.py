@@ -78,3 +78,9 @@ class Transaction:
         transactions= self.listAllTransactions()
         return [filteredTransactions for filteredTransactions in transactions if condition(filteredTransactions)]
             
+    @staticmethod
+    def validateTransactionType(option):
+        if option == 1 :
+            return "Income"
+        elif option == 2:
+            return "Expense"
