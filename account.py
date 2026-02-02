@@ -82,3 +82,32 @@ class Account :
 
         except Exception:
             self.balance = 0
+    
+    # Create the first account when none exists
+    @staticmethod
+    def firstAccount(self):
+                account_name = input("Please insert the name of the new account: ")    
+                balance = input ("Please insert initial balance: ")
+
+                # Create and store the first account
+                account = Account(account_name,balance)
+                return account_name,account
+    
+
+    # Allow user to log in to an existing account
+    @staticmethod
+    def loginAccount(accounts):
+        while True:
+            # Display the current available accounts
+            print("Existing accounts:")
+
+            for acc in accounts:
+                print(f"- {acc}")
+            account_name = input("Please insert the name of your account: ")
+
+            # Validate that the provided account exists and load it if found
+            if Account.findAccount(account_name):
+                return account_name,Account(account_name)
+            
+            else:
+                print(f"Account named \"{account_name}\" doesn't exist\n") 
