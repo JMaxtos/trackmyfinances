@@ -43,7 +43,7 @@ cd track-my-finances
 
 2. **Run the application**:
 ```bash
-python main.py
+python menu.py
 
 ```
 
