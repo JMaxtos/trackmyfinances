@@ -42,7 +42,7 @@ cd trackmyfinances
 
 2. **Run the application**:
 ```bash
-python menu.py
+python main.py --cli
 
 ```
 
