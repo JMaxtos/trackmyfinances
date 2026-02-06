@@ -22,10 +22,10 @@ class CLIMenu:
         # Retrieve all existing accounts (csv files in the current directory)
         accounts = Account.listAllAccounts()
         
-        if not accounts:
+        if not accounts or accounts == None:
             print("No accounts found. You must create a new account first.\n")
             # Prompt the user to create an initial account
-            self.account_name, self.account = Account.firstAccount()
+            self.account_name, self.account = Account.createAccount()
         else:
             # Allow user to select and log in to an existing account
             self.account_name, self.account = Account.loginAccount(accounts)
@@ -85,19 +85,7 @@ class CLIMenu:
     def accountsMenuChoice(self,choice):
         # Option 1: Create new Account
         if choice == 1:
-            while True:
-                user = input("Please insert the name of the new account ")
-                if Account.findAccount(user):
-                    print(f'Account name {user} is already in use. Please choose another name.\n')
-                else:
-                    break 
-
-            balance = int(input("Account Initial Balance: "))
-            try: 
-                Account(user, balance)
-                print("Account Created Successfully")
-            except:
-                raise Exception("Account couldn't be created")
+            _,_ = Account.createAccount()
             input("\nPress Enter to return to Accounts Menu...")
             self.accountsMenu()  
 
@@ -190,7 +178,6 @@ class CLIMenu:
 
     # Handle user input from the filter transaction menu
     def transactionFiltersMenuChoice(self,choice):
-           
         if choice == 1: # type
             while True:
                 type = input("Please insert the Type you want to filter: ")
