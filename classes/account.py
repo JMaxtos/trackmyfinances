@@ -111,6 +111,7 @@ class Account :
     # Allow user to log in to an existing account
     @staticmethod
     def loginAccount(accounts):
+        Utils.clearTerminal()
         while True:
             # Display the current available accounts
             print("Existing accounts:")

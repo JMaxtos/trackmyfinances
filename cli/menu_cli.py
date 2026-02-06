@@ -6,32 +6,48 @@ from datetime import datetime
 
 # Main menu system for the Track My Finances terminal application
 class CLIMenu:
-    MENU_TITLES = {"main": "Track My Finances","accounts":"Accounts Menu","transactions":"Transactions Menu","filters":"Filters Menu"}
+    MENU_TITLES = {"main": "Track My Finances","accounts":"Accounts Menu","transactions":"Transactions Menu","filters":"Filters Menu","login":"Welcome to TrackMyFinances!"}
     MAIN_MENU_OPTIONS = ["Accounts Menu","Transactions Menu","Exit Program"]
     TRANSACTIONS_MENU = ["Add an transaction","List all transactions","Transaction Filter Menu", "Exit Menu"]
     ACCOUNTS_MENU = ["Create an account","Find an account","Change account","Show Balance","Exit Menu"]
     FILTERS_MENU = ["Filter by type","Filter by category","Filter by month","Filter by year","Filter by specific date","Exit Menu"]
-           
+    LOGIN_MENU  = [ "Create New Account","Login to an existing account"]  
+
     # Initialize the menu and load or create user accounts
     def __init__(self):
-        
+        self.account_name = None
+        self.account = None
         # Check if the accounts directory is created
         if not os.path.exists(Account.ACCOUNT_DIR):
             os.makedirs(Account.ACCOUNT_DIR
                         )
         # Retrieve all existing accounts (csv files in the current directory)
-        accounts = Account.listAllAccounts()
+        self.accounts = Account.listAllAccounts()
         
-        if not accounts or accounts == None:
+        if not self.accounts or self.accounts == None:
             print("No accounts found. You must create a new account first.\n")
             # Prompt the user to create an initial account
             self.account_name, self.account = Account.createAccount()
         else:
-            # Allow user to select and log in to an existing account
-            self.account_name, self.account = Account.loginAccount(accounts)
+            self.loginMenu()
         
         # Launch the main menu
         self.principalMenu()   
+
+    # ====== Login Menu ======  
+    def loginMenu(self):
+        choice = self.displayMenu(self.MENU_TITLES["login"], self.LOGIN_MENU)
+        self.loginMenuChoice(choice)
+
+    def loginMenuChoice(self,choice):
+        if choice == 1:
+            _, _ = Account.createAccount()
+            self.loginMenu()
+            
+        elif choice == 2:
+            self.accounts = Account.listAllAccounts()
+            self.account_name, self.account = Account.loginAccount(self.accounts)
+    
 
     # ====== Main Menu ======  
     # Function that displays the menus
