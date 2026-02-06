@@ -85,7 +85,7 @@ class Account :
     
     # Create the first account when none exists
     @staticmethod
-    def firstAccount(self):
+    def firstAccount():
                 account_name = input("Please insert the name of the new account: ")    
                 balance = input ("Please insert initial balance: ")
 
