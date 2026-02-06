@@ -1,6 +1,7 @@
 import csv
 import os
 from datetime import datetime
+from classes.utils import Utils
 
 # Financial account with a name, balance, and a CSV file that stores the account’s balance and transaction history.
 class Account :
@@ -85,13 +86,26 @@ class Account :
     
     # Create the first account when none exists
     @staticmethod
-    def firstAccount():
-                account_name = input("Please insert the name of the new account: ")    
-                balance = input ("Please insert initial balance: ")
+    def createAccount():
+            while True:
+                user = input("Please insert the name of the new account ")
+                if Account.findAccount(user):
+                    print(f'Account name {user} is already in use. Please choose another name.\n')
+                else:
+                    break 
 
-                # Create and store the first account
-                account = Account(account_name,balance)
-                return account_name,account
+            while True:
+                try:
+                    balance = float(input("Account Initial Balance: "))
+                    break
+                except ValueError:
+                    print("Invalid balance. Please insert a number.")
+            try: 
+                account = Account(user, balance)
+                print("Account Created Successfully")
+            except:
+                raise Exception("Account couldn't be created")
+            return user, account
     
 
     # Allow user to log in to an existing account
