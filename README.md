@@ -35,11 +35,10 @@ The project follows Object-Oriented Programming (OOP) principles to ensure code 
 
 1. **Clone the repository**:
 ```bash
-git clone https://github.com/JMaxtos/track-my-finances.git
-cd track-my-finances
+git clone https://github.com/JMaxtos/trackmyfinances.git
+cd trackmyfinances
 
 ```
-
 
 2. **Run the application**:
 ```bash
