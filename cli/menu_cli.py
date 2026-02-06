@@ -1,37 +1,59 @@
 import os
-from account import Account
-from transaction import Transaction
-from utils import Utils
+from classes.account import Account
+from classes.transaction import Transaction
+from classes.utils import Utils
 from datetime import datetime
 
 # Main menu system for the Track My Finances terminal application
-class Menu:
-    MENU_TITLES = {"main": "Track My Finances","accounts":"Accounts Menu","transactions":"Transactions Menu","filters":"Filters Menu"}
+class CLIMenu:
+    MENU_TITLES = {"main": "Track My Finances","accounts":"Accounts Menu","transactions":"Transactions Menu","filters":"Filters Menu","login":"Welcome to TrackMyFinances!"}
     MAIN_MENU_OPTIONS = ["Accounts Menu","Transactions Menu","Exit Program"]
     TRANSACTIONS_MENU = ["Add an transaction","List all transactions","Transaction Filter Menu", "Exit Menu"]
     ACCOUNTS_MENU = ["Create an account","Find an account","Change account","Show Balance","Exit Menu"]
     FILTERS_MENU = ["Filter by type","Filter by category","Filter by month","Filter by year","Filter by specific date","Exit Menu"]
-           
+    LOGIN_MENU  = [ "Create New Account","Login to an existing account","Exit Program"]  
+
     # Initialize the menu and load or create user accounts
     def __init__(self):
-        
+        self.account_name = None
+        self.account = None
         # Check if the accounts directory is created
         if not os.path.exists(Account.ACCOUNT_DIR):
             os.makedirs(Account.ACCOUNT_DIR
                         )
         # Retrieve all existing accounts (csv files in the current directory)
-        accounts = Account.listAllAccounts()
+        self.accounts = Account.listAllAccounts()
         
-        if not accounts:
+        if not self.accounts or self.accounts == None:
             print("No accounts found. You must create a new account first.\n")
             # Prompt the user to create an initial account
-            self.account_name, self.account = Account.firstAccount()
+            self.account_name, self.account = Account.createAccount()
         else:
-            # Allow user to select and log in to an existing account
-            self.account_name, self.account = Account.loginAccount(accounts)
+            self.loginMenu()
         
         # Launch the main menu
         self.principalMenu()   
+
+    # ====== Login Menu ======  
+    def loginMenu(self):
+        choice = self.displayMenu(self.MENU_TITLES["login"], self.LOGIN_MENU)
+        self.loginMenuChoice(choice)
+
+    def loginMenuChoice(self,choice):
+        if choice == 1:
+            _, _ = Account.createAccount()
+            self.loginMenu()
+            
+        elif choice == 2:
+            self.accounts = Account.listAllAccounts()
+            self.account_name, self.account = Account.loginAccount(self.accounts)
+        elif choice == 3:
+            Utils.clearTerminal()
+
+            print("Thank you for using TrackMyFinances!")
+            # Safely exits the program
+            exit(0)
+    
 
     # ====== Main Menu ======  
     # Function that displays the menus
@@ -75,29 +97,17 @@ class Menu:
             exit(0)
 
 
+    # ====== Accounts Menu ======  
     # Display the account menu     
     def accountsMenu(self):
         choice = self.displayMenu(self.MENU_TITLES["accounts"], self.ACCOUNTS_MENU)
         self.accountsMenuChoice(choice)
 
-
     # Handle user input from the accounts menu
     def accountsMenuChoice(self,choice):
         # Option 1: Create new Account
         if choice == 1:
-            while True:
-                user = input("Please insert the name of the new account ")
-                if Account.findAccount(user):
-                    print(f'Account name {user} is already in use. Please choose another name.\n')
-                else:
-                    break 
-
-            balance = int(input("Account Initial Balance: "))
-            try: 
-                Account(user, balance)
-                print("Account Created Successfully")
-            except:
-                raise Exception("Account couldn't be created")
+            _,_ = Account.createAccount()
             input("\nPress Enter to return to Accounts Menu...")
             self.accountsMenu()  
 
@@ -115,7 +125,9 @@ class Menu:
         if choice == 3:
             while True:
                 new_account = input("Introduce the name of the account you want to access: ")
-                if Account.findAccount(new_account):
+                if new_account == self.account_name:
+                    self.accountsMenu()
+                elif Account.findAccount(new_account):
                     self.account_name = new_account
                     self.account = Account(new_account)
                     break
@@ -135,7 +147,8 @@ class Menu:
 
 
     
-    # Display the transactions Menu
+    # ====== Transactions Menu ======  
+    # Display menu
     def transactionsMenu(self):
         # Initialize a transaction manager for the current account
         self.transaction = Transaction(self.account)
@@ -147,7 +160,16 @@ class Menu:
     def transactionsMenuChoice(self,choice):
         # 1 Add a transaction
         if choice == 1:
-            transactionAmount = int(input("Please insert the amount of the Transaction: "))
+            while True:
+                try:
+                    transactionAmount = int(input("Please insert the amount of the Transaction: "))
+                    if transactionAmount > 0:
+                        break
+                    else:
+                        print("Transactions can't be either zero 0 or a negative amount.") 
+                except ValueError:
+                     print("Invalid amount. Please insert a number.")
+
             while True:
                 transactionType = int(input("\t1. Income\n\t2. Expense\nPlease insert the Type of the Transaction: "))
                 if transactionType in (1, 2):
@@ -183,6 +205,8 @@ class Menu:
         if choice == 4:
              self.principalMenu()
 
+
+
     # Display Transaction Filter Menu
     def transactionFilterMenu(self):
         choice = self.displayMenu(self.MENU_TITLES["filters"], self.FILTERS_MENU)
@@ -190,7 +214,6 @@ class Menu:
 
     # Handle user input from the filter transaction menu
     def transactionFiltersMenuChoice(self,choice):
-           
         if choice == 1: # type
             while True:
                 type = input("Please insert the Type you want to filter: ")
@@ -207,6 +230,8 @@ class Menu:
                 category = input("Please insert the Category you want to filter: ")
                 if Utils.isValidString(category):
                     break
+                else:
+                    print("Invalid Category. Please insert a word for the category.")
             categoryTransactions = self.transaction.transactionsByFilter(lambda tx : tx['Category']== category) 
             self.transaction.printListTransactions(categoryTransactions)
             input("\nPress Enter to return to transactions Menu...")
@@ -260,8 +285,5 @@ class Menu:
             self.transaction.printListTransactions(dateTransactions)
             input("\nPress Enter to return...")
             self.transactionFilterMenu()
-
-        
-        
-if __name__ == "__main__":
-    Menu()
+        if choice == 6:
+            self.transactionsMenu()
