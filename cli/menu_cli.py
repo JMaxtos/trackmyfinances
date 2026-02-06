@@ -163,7 +163,10 @@ class CLIMenu:
             while True:
                 try:
                     transactionAmount = int(input("Please insert the amount of the Transaction: "))
-                    break
+                    if transactionAmount > 0:
+                        break
+                    else:
+                        print("Transactions can't be either zero 0 or a negative amount.") 
                 except ValueError:
                      print("Invalid amount. Please insert a number.")
 
@@ -227,6 +230,8 @@ class CLIMenu:
                 category = input("Please insert the Category you want to filter: ")
                 if Utils.isValidString(category):
                     break
+                else:
+                    print("Invalid Category. Please insert a word for the category.")
             categoryTransactions = self.transaction.transactionsByFilter(lambda tx : tx['Category']== category) 
             self.transaction.printListTransactions(categoryTransactions)
             input("\nPress Enter to return to transactions Menu...")
@@ -280,3 +285,5 @@ class CLIMenu:
             self.transaction.printListTransactions(dateTransactions)
             input("\nPress Enter to return...")
             self.transactionFilterMenu()
+        if choice == 6:
+            self.transactionsMenu()
