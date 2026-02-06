@@ -11,7 +11,7 @@ class CLIMenu:
     TRANSACTIONS_MENU = ["Add an transaction","List all transactions","Transaction Filter Menu", "Exit Menu"]
     ACCOUNTS_MENU = ["Create an account","Find an account","Change account","Show Balance","Exit Menu"]
     FILTERS_MENU = ["Filter by type","Filter by category","Filter by month","Filter by year","Filter by specific date","Exit Menu"]
-    LOGIN_MENU  = [ "Create New Account","Login to an existing account"]  
+    LOGIN_MENU  = [ "Create New Account","Login to an existing account","Exit Program"]  
 
     # Initialize the menu and load or create user accounts
     def __init__(self):
@@ -47,6 +47,12 @@ class CLIMenu:
         elif choice == 2:
             self.accounts = Account.listAllAccounts()
             self.account_name, self.account = Account.loginAccount(self.accounts)
+        elif choice == 3:
+            Utils.clearTerminal()
+
+            print("Thank you for using TrackMyFinances!")
+            # Safely exits the program
+            exit(0)
     
 
     # ====== Main Menu ======  
@@ -91,11 +97,11 @@ class CLIMenu:
             exit(0)
 
 
+    # ====== Accounts Menu ======  
     # Display the account menu     
     def accountsMenu(self):
         choice = self.displayMenu(self.MENU_TITLES["accounts"], self.ACCOUNTS_MENU)
         self.accountsMenuChoice(choice)
-
 
     # Handle user input from the accounts menu
     def accountsMenuChoice(self,choice):
@@ -119,7 +125,9 @@ class CLIMenu:
         if choice == 3:
             while True:
                 new_account = input("Introduce the name of the account you want to access: ")
-                if Account.findAccount(new_account):
+                if new_account == self.account_name:
+                    self.accountsMenu()
+                elif Account.findAccount(new_account):
                     self.account_name = new_account
                     self.account = Account(new_account)
                     break
@@ -139,7 +147,8 @@ class CLIMenu:
 
 
     
-    # Display the transactions Menu
+    # ====== Transactions Menu ======  
+    # Display menu
     def transactionsMenu(self):
         # Initialize a transaction manager for the current account
         self.transaction = Transaction(self.account)
@@ -151,7 +160,13 @@ class CLIMenu:
     def transactionsMenuChoice(self,choice):
         # 1 Add a transaction
         if choice == 1:
-            transactionAmount = int(input("Please insert the amount of the Transaction: "))
+            while True:
+                try:
+                    transactionAmount = int(input("Please insert the amount of the Transaction: "))
+                    break
+                except ValueError:
+                     print("Invalid amount. Please insert a number.")
+
             while True:
                 transactionType = int(input("\t1. Income\n\t2. Expense\nPlease insert the Type of the Transaction: "))
                 if transactionType in (1, 2):
@@ -186,6 +201,8 @@ class CLIMenu:
         # Exit
         if choice == 4:
              self.principalMenu()
+
+
 
     # Display Transaction Filter Menu
     def transactionFilterMenu(self):

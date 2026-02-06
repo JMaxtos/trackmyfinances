@@ -88,7 +88,7 @@ class Account :
     @staticmethod
     def createAccount():
             while True:
-                user = input("Please insert the name of the new account ")
+                user = input("Please insert the name of the new account: ")
                 if Account.findAccount(user):
                     print(f'Account name {user} is already in use. Please choose another name.\n')
                 else:
@@ -96,8 +96,11 @@ class Account :
 
             while True:
                 try:
-                    balance = float(input("Account Initial Balance: "))
-                    break
+                    balance = int(input("Account Initial Balance: "))
+                    if balance >= 0:
+                        break
+                    else:
+                        print("Sorry, but the initial ammount can't be negative.")
                 except ValueError:
                     print("Invalid balance. Please insert a number.")
             try: 
