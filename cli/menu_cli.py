@@ -5,7 +5,7 @@ from classes.utils import Utils
 from datetime import datetime
 
 # Main menu system for the Track My Finances terminal application
-class Menu:
+class CLIMenu:
     MENU_TITLES = {"main": "Track My Finances","accounts":"Accounts Menu","transactions":"Transactions Menu","filters":"Filters Menu"}
     MAIN_MENU_OPTIONS = ["Accounts Menu","Transactions Menu","Exit Program"]
     TRANSACTIONS_MENU = ["Add an transaction","List all transactions","Transaction Filter Menu", "Exit Menu"]
