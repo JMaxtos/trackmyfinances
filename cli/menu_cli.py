@@ -1,7 +1,7 @@
 import os
-from account import Account
-from transaction import Transaction
-from utils import Utils
+from classes.account import Account
+from classes.transaction import Transaction
+from classes.utils import Utils
 from datetime import datetime
 
 # Main menu system for the Track My Finances terminal application
@@ -260,8 +260,3 @@ class Menu:
             self.transaction.printListTransactions(dateTransactions)
             input("\nPress Enter to return...")
             self.transactionFilterMenu()
-
-        
-        
-if __name__ == "__main__":
-    Menu()
