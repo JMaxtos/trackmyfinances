@@ -84,3 +84,12 @@ class Transaction:
             return "Income"
         elif option == 2:
             return "Expense"
+    # Function that lists the n recent transactions
+    def getRecentTransactions(self,n):
+            transactions = self.listAllTransactions()
+            return transactions[-n:]
+    
+    # Function that lists the n oldest transactions
+    def getOldTransactions(self,n):
+            transactions = self.listAllTransactions()
+            return transactions[:n]
