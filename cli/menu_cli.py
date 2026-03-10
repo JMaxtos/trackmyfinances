@@ -8,7 +8,7 @@ from datetime import datetime
 class CLIMenu:
     MENU_TITLES = {"main": "Track My Finances","accounts":"Accounts Menu","transactions":"Transactions Menu","filters":"Filters Menu","login":"Welcome to TrackMyFinances!"}
     MAIN_MENU_OPTIONS = ["Accounts Menu","Transactions Menu","Exit Program"]
-    TRANSACTIONS_MENU = ["Add an transaction","List all transactions","Transaction Filter Menu", "Exit Menu"]
+    TRANSACTIONS_MENU = ["Add an transaction","List Recent Transactions","List Old Transactions","Transaction Filter Menu", "Exit Menu"]
     ACCOUNTS_MENU = ["Create an account","Find an account","Change account","Show Balance","Exit Menu"]
     FILTERS_MENU = ["Filter by type","Filter by category","Filter by month","Filter by year","Filter by specific date","Exit Menu"]
     LOGIN_MENU  = [ "Create New Account","Login to an existing account","Exit Program"]  
@@ -189,20 +189,44 @@ class CLIMenu:
             self.transactionsMenu()
 
 
-        #  List all transactions
-        if choice ==2 :
-            alltransactions= self.transaction.listAllTransactions()
-            self.transaction.printListTransactions(alltransactions)
+        #  List recent transactions
+        if choice == 2 :
+            while True:
+                    try:
+                        n_transactions = int(input("Please insert the number of recent transactions you want to see: "))
+                        if n_transactions > 0:
+                            break
+                        else:
+                            print("Please inser a positive number.")
+                    except ValueError:
+                            print("Invalid number.")
+            recent_transactions = self.transaction.getRecentTransactions(n_transactions)
+            self.transaction.printListTransactions(recent_transactions)
             input("\nPress Enter to return to transactions Menu...")
             self.transactionsMenu()
 
+        # List old transactions
+        if choice == 3:
+            while True:
+                    try:
+                        n_transactions = int(input("Please insert the number of old transactions you want to see:  "))
+                        if n_transactions > 0:
+                            break
+                        else:
+                            print("Please inser a positive number.")
+                    except ValueError:
+                            print("Invalid number.")
+            old_transactions = self.transaction.getOldTransactions(n_transactions)
+            self.transaction.printListTransactions(old_transactions)
+            input("\nPress Enter to return to transactions Menu...")
+            self.transactionsMenu()
 
         # Transaction Filter Menu
-        if choice == 3 :
+        if choice == 4 :
          self.transactionFilterMenu()
 
         # Exit
-        if choice == 4:
+        if choice == 5:
              self.principalMenu()
 
 
